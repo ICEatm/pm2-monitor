@@ -1,0 +1,17 @@
+{
+    "version": "1.0",
+    "email": {
+        "mail_from": "",
+        "mail_from_password": "",
+        "mail_to": ""
+    },
+    "smtp": {
+        "host": "smtp.web.de",
+        "port": 587
+    },
+    "max_restarts": 3,
+    "check_interval_minutes": 1,
+    "processes": [
+        "TEST-PROCESS"
+    ]
+}
