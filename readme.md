@@ -1,7 +1,7 @@
 <br/>
 <p align="center">
   <a href="https://github.com/ICEatm/pm2-monitor">
-    <img src="https://raw.githubusercontent.com/Unitech/pm2/development/pres/pm2-v4.png" alt="Logo" width="80" height="80">
+    <img src="https://raw.githubusercontent.com/Unitech/pm2/development/pres/pm2-v4.png" alt="Logo" width="350" height="80">
   </a>
 
   <h3 align="center">PM2 - Process Montior</h3>
