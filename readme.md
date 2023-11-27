@@ -54,4 +54,4 @@ To install and set up the project, follow these steps:
 Before starting the application, run `npm run build` to build the project. After the build process, customize the configuration settings in config/default.json to match your requirements and ensure the specified processes align with those you intend to monitor. Start the application with `npm run start` to initiate the monitoring process
 
 ## Authors
-* **ICEatm** - *Developer* - [ICEatm](https://github.com/ICEatm) - **
+* **ICEatm** - *Developer* - [ICEatm](https://github.com/ICEatm)
