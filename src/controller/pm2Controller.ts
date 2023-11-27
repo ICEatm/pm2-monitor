@@ -11,7 +11,7 @@ export default class PM2Controller {
   private readonly _dataManager: DataManager;
   private intervalId: NodeJS.Timeout | null;
 
-  constructor(dataManager: DataManager) {
+  constructor() {
     this._mailController = new MailController();
     this._dataManager = new DataManager(config);
     this.intervalId = null;
