@@ -1,10 +1,10 @@
 import MailController from '../controller/mailController';
 import DataManager from '../manager/dataManager';
 import config from '../../config/default.json';
-import pm2, { ProcessDescription } from 'pm2';
+import pm2, {ProcessDescription} from 'pm2';
 import PM2Process from '../../types/PM2';
 import logger from '../utilities/Logger';
-import { exit } from 'process';
+import {exit} from 'process';
 
 export default class PM2Controller {
   private readonly _mailController: MailController;

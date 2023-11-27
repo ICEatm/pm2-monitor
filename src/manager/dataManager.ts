@@ -17,7 +17,7 @@ export default class DataManager {
     const processArray: PM2Process[] = [];
 
     this.config.processes.forEach(process => {
-      processArray.push({ name: process, restarts: 0 });
+      processArray.push({name: process, restarts: 0});
     });
 
     const numProcesses = processArray.length;
@@ -36,7 +36,15 @@ export default class DataManager {
   }
 
   private isConfigValid(): boolean {
-    const { version, email, smtp, max_restarts, check_interval_minutes, processes } = this.config;
+    const {
+      version,
+      email,
+      smtp,
+      max_restarts,
+      check_interval_minutes,
+      processes,
+    } = this.config;
+
     return !!(
       version &&
       email &&
