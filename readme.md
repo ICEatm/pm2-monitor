@@ -27,6 +27,9 @@
 
 ## About The Project
 ![Screen Shot](https://i.imgur.com/MgngEFh.png)
+<p align="center">
+<img src="https://i.imgur.com/sonnWTk.jpg" alt="Screenshot" width="350" height="500">
+</p>
 
 This project implements a monitoring tool using Node.js to oversee various processes managed by PM2. It checks the health of specified processes at regular intervals, detecting if any process has restarted beyond a defined threshold. If the number of restarts surpasses the threshold, it triggers an alert via email using Nodemailer. The tool utilizes configuration files to manage process details and email settings. This simple yet effective monitoring tool helps in maintaining the stability and health of managed processes.
 
