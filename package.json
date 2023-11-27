@@ -13,6 +13,14 @@
     "build": "tsc && ts-node --transpiler sucrase/ts-node-plugin ./src/scripts/copy_html_to_build.ts",
     "start": "node ./build/src/index.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ICEatm/pm2-monitor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ICEatm/pm2-monitor/issues"
+  },
+  "homepage": "https://github.com/ICEatm/pm2-monitor#readme",
   "keywords": [],
   "author": "ICEatm",
   "license": "LGPL-3.0-only",
