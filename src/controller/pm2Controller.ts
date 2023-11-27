@@ -11,9 +11,9 @@ export default class PM2Controller {
   private readonly _dataManager: DataManager;
   private intervalId: NodeJS.Timeout | null;
 
-  constructor() {
-    this._mailController = new MailController();
-    this._dataManager = new DataManager(config);
+  constructor(dataManager: DataManager, mailController: MailController) {
+    this._mailController = mailController;
+    this._dataManager = dataManager;
     this.intervalId = null;
 
     logger.info(`PM2 Monitor started! Version ${config.version}`);
