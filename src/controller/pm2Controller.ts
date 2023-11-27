@@ -48,7 +48,7 @@ export default class PM2Controller {
       const data = await this.getDataFromPM2(name);
       const appRestarts: number | undefined = data?.[0]?.pm2_env?.restart_time;
 
-      if (appRestarts !== undefined && appRestarts >= config.max_restarts) {
+      if (appRestarts !== undefined && appRestarts > config.max_restarts) {
         logger.info(
           `Process '${name}' has restarted ${appRestarts} times which is greater than the threshold. Sending mail!`
         );
@@ -56,7 +56,9 @@ export default class PM2Controller {
         this._mailController.sendMail(process);
       } else {
         logger.info(
-          `Process '${name}' has restarted ${appRestarts} times! No need to send a mail!`
+          `Process '${name}' has restarted ${
+            typeof appRestarts === 'undefined' ? 'n/a' : appRestarts
+          } times! No need to send a mail!`
         );
       }
     } catch (error) {
