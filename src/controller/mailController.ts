@@ -21,28 +21,33 @@ export default class MailController implements IShutdown {
     }
   }
 
-  public async sendMail(process: PM2Process) {
+  public async sendMail(processes: PM2Process[]) {
     const htmlTemplate = await this.readHTMLTemplate();
 
-    const tableRow = `<tr>
-      <td>${process.name}</td>
-      <td>${process.restarts ?? 'n/a'}</td>
-      <td>${max_restarts.toString()}</td>
-    </tr>`;
+    let tableRows = '';
 
-    const replacedHtml = htmlTemplate.replace('{{tableRows}}', tableRow);
+    for (const process of processes) {
+      const row = `<tr>
+        <td>${process.name}</td>
+        <td>${process.restarts ?? 'n/a'}</td>
+        <td>${max_restarts.toString()}</td>
+      </tr>`;
+      tableRows += row;
+    }
+
+    const replacedHtml = htmlTemplate.replace('{{tableRows}}', tableRows);
 
     const mailOptions = {
       from: email.mail_from,
       to: email.mail_to,
-      subject: `Service ${process.name} has restarted too many times!`,
+      subject: 'Exceeded Threshold for Processes',
       html: replacedHtml,
     };
 
     try {
       const info = await this._mailTransporter.sendMail(mailOptions);
       logger.info(
-        `Status mail for service ${process.name} has been sent! Response: ${info.response}`
+        `Status mail for processes has been sent! Response: ${info.response}`
       );
     } catch (error) {
       const e = error as Error;

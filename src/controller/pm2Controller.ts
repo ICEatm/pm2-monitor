@@ -9,6 +9,7 @@ import logger from '../utilities/Logger';
 import schedule from 'node-schedule';
 
 export default class PM2Controller implements IShutdown {
+  private _processesExceedingThreshold: PM2Process[] = [];
   private readonly _mailController: MailController;
   private _processJob: schedule.Job | null = null;
   private readonly _dataManager: DataManager;
@@ -29,25 +30,44 @@ export default class PM2Controller implements IShutdown {
   }
 
   private async scheduleJob(): Promise<schedule.Job> {
-    const intervalInMinutes = config.check_interval_minutes;
     const processes: PM2Process[] = await this._dataManager.getProcesses();
+    const intervalInMinutes = config.check_interval_minutes;
     logger.info(
       `Scheduling job to check processes every ${intervalInMinutes} minutes`
     );
 
-    return schedule.scheduleJob(
-      'process_checker_job',
-      `*/${intervalInMinutes} * * * *`,
-      async () => {
-        try {
-          for (const pm2Process of processes) {
-            await this.checkProcess(pm2Process);
-          }
-        } catch (error) {
-          logger.error(`Error in scheduled job: ${error}`);
+    return schedule.scheduleJob(`*/${intervalInMinutes} * * * *`, async () => {
+      try {
+        this._processesExceedingThreshold = [];
+
+        for (const pm2Process of processes) {
+          await this.checkProcess(pm2Process);
         }
+
+        if (this._processesExceedingThreshold.length > 0) {
+          logger.info(
+            `${
+              this._processesExceedingThreshold.length > 1
+                ? 'Multiple processes'
+                : 'Only one process'
+            } exceed${
+              this._processesExceedingThreshold.length > 1 ? '' : 's'
+            } the threshold. Sending ${
+              this._processesExceedingThreshold.length > 1
+                ? 'collective mail!'
+                : 'individual mail!'
+            }`
+          );
+          await this._mailController.sendMail(
+            this._processesExceedingThreshold
+          );
+        } else {
+          logger.info('No processes exceeded the threshold. No mail sent.');
+        }
+      } catch (error) {
+        logger.error(`Error in scheduled job: ${error}`);
       }
-    );
+    });
   }
 
   private async checkProcess(pm2Process: PM2Process): Promise<void> {
@@ -60,15 +80,15 @@ export default class PM2Controller implements IShutdown {
 
       if (appRestarts !== undefined && appRestarts > config.max_restarts) {
         logger.info(
-          `Process '${name}' has restarted ${appRestarts} times which is greater than the threshold. Sending mail!`
+          `Process '${name}' has restarted ${appRestarts} times which is greater than the threshold.`
         );
         pm2Process.restarts = appRestarts;
-        this._mailController.sendMail(pm2Process);
+        this._processesExceedingThreshold.push(pm2Process);
       } else {
         logger.info(
           `Process '${name}' has restarted ${
             typeof appRestarts === 'undefined' ? 'n/a' : appRestarts
-          } times! No need to send a mail!`
+          } times! No need to include in the notification.`
         );
       }
     } catch (error) {
