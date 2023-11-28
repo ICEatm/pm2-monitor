@@ -10,13 +10,12 @@ import schedule from 'node-schedule';
 
 export default class PM2Controller implements IShutdown {
   private readonly _mailController: MailController;
+  private _processJob: schedule.Job | null = null;
   private readonly _dataManager: DataManager;
-  private intervalId: NodeJS.Timeout | null;
 
   constructor(dataManager: DataManager, mailController: MailController) {
     this._mailController = mailController;
     this._dataManager = dataManager;
-    this.intervalId = null;
 
     logger.info(`PM2 Monitor started! Version ${config.version}`);
     ExitHandler.registerProcessToClose(this);
@@ -24,19 +23,19 @@ export default class PM2Controller implements IShutdown {
   }
 
   public async gracefulShutdown(): Promise<void> {
-    if (this.intervalId !== null) {
-      this.intervalId = null;
+    if (this._processJob !== null) {
+      this._processJob.cancel();
     }
   }
 
-  private async scheduleJob(): Promise<void> {
+  private async scheduleJob(): Promise<schedule.Job> {
     const intervalInMinutes = config.check_interval_minutes;
     const processes: PM2Process[] = await this._dataManager.getProcesses();
     logger.info(
       `Scheduling job to check processes every ${intervalInMinutes} minutes`
     );
 
-    const job = schedule.scheduleJob(
+    return schedule.scheduleJob(
       'process_checker_job',
       `*/${intervalInMinutes} * * * *`,
       async () => {
@@ -94,14 +93,14 @@ export default class PM2Controller implements IShutdown {
   }
 
   private connect(): void {
-    pm2.connect(error => {
+    pm2.connect(async error => {
       if (error) {
         const e = error as Error;
         logger.error(`Error while connecting to pm2! ${e.message}`);
         ExitHandler.handleExit(1);
       }
 
-      this.scheduleJob();
+      this._processJob = await this.scheduleJob();
     });
   }
 }
