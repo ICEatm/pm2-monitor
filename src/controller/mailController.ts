@@ -1,15 +1,24 @@
 import {smtp, email, max_restarts} from '../../config/default.json';
+import ExitHandler from '../handler/ExitHandler';
 import type PM2Process from '../../types/PM2';
+import IShutdown from '../../interfaces/IShutdown';
 import {createTransport} from 'nodemailer';
 import logger from '../utilities/Logger';
 import fs from 'fs/promises';
 import {join} from 'path';
 
-export default class MailController {
+export default class MailController implements IShutdown {
   private readonly _mailTransporter;
 
   constructor() {
     this._mailTransporter = this.initTransporter();
+    ExitHandler.registerProcessToClose(this);
+  }
+
+  public async gracefulShutdown(): Promise<void> {
+    if (this._mailTransporter !== null) {
+      this._mailTransporter.close();
+    }
   }
 
   public async sendMail(process: PM2Process) {

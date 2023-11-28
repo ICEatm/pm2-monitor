@@ -1,12 +1,13 @@
 import MailController from '../controller/mailController';
 import DataManager from '../manager/dataManager';
+import ExitHandler from '../handler/ExitHandler';
 import config from '../../config/default.json';
+import IShutdown from '../../interfaces/IShutdown';
 import pm2, {ProcessDescription} from 'pm2';
 import PM2Process from '../../types/PM2';
 import logger from '../utilities/Logger';
-import {exit} from 'process';
 
-export default class PM2Controller {
+export default class PM2Controller implements IShutdown {
   private readonly _mailController: MailController;
   private readonly _dataManager: DataManager;
   private intervalId: NodeJS.Timeout | null;
@@ -17,7 +18,14 @@ export default class PM2Controller {
     this.intervalId = null;
 
     logger.info(`PM2 Monitor started! Version ${config.version}`);
+    ExitHandler.registerProcessToClose(this);
     this.connect();
+  }
+
+  public async gracefulShutdown(): Promise<void> {
+    if (this.intervalId !== null) {
+      this.intervalId = null;
+    }
   }
 
   public async checkServices(): Promise<void> {
@@ -29,8 +37,8 @@ export default class PM2Controller {
 
       this.intervalId = setInterval(
         async () => {
-          for (const process of processes) {
-            await this.checkProcess(process);
+          for (const pm2Process of processes) {
+            await this.checkProcess(pm2Process);
           }
         },
         config.check_interval_minutes * 60 * 1000
@@ -40,8 +48,8 @@ export default class PM2Controller {
     }
   }
 
-  private async checkProcess(process: PM2Process): Promise<void> {
-    const name = process.name;
+  private async checkProcess(pm2Process: PM2Process): Promise<void> {
+    const name = pm2Process.name;
     logger.info(`Checking process with name '${name}'`);
 
     try {
@@ -52,8 +60,8 @@ export default class PM2Controller {
         logger.info(
           `Process '${name}' has restarted ${appRestarts} times which is greater than the threshold. Sending mail!`
         );
-        process.restarts = appRestarts;
-        this._mailController.sendMail(process);
+        pm2Process.restarts = appRestarts;
+        this._mailController.sendMail(pm2Process);
       } else {
         logger.info(
           `Process '${name}' has restarted ${
@@ -66,7 +74,7 @@ export default class PM2Controller {
       logger.error(
         `Error while getting data for process '${name}'! ${errObj.message}`
       );
-      exit(1);
+      ExitHandler.handleExit(1);
     }
   }
 
@@ -87,7 +95,7 @@ export default class PM2Controller {
       if (error) {
         const e = error as Error;
         logger.error(`Error while connecting to pm2! ${e.message}`);
-        exit(1);
+        ExitHandler.handleExit(1);
       }
     });
   }

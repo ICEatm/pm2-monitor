@@ -14,7 +14,8 @@
     "src/**/*.ts",
     "test/**/*.ts",
     "./types/*.ts",
-    "./config/default.json"
+    "./config/default.json",
+    "./interfaces/IShutdown.ts",
   ],
   "exclude": [
     "node_modules"
