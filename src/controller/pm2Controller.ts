@@ -1,11 +1,12 @@
 import MailController from '../controller/mailController';
+import IShutdown from '../../interfaces/IShutdown';
 import DataManager from '../manager/dataManager';
 import ExitHandler from '../handler/ExitHandler';
 import config from '../../config/default.json';
-import IShutdown from '../../interfaces/IShutdown';
 import pm2, {ProcessDescription} from 'pm2';
 import PM2Process from '../../types/PM2';
 import logger from '../utilities/Logger';
+import schedule from 'node-schedule';
 
 export default class PM2Controller implements IShutdown {
   private readonly _mailController: MailController;
@@ -28,24 +29,26 @@ export default class PM2Controller implements IShutdown {
     }
   }
 
-  public async checkServices(): Promise<void> {
-    if (this.intervalId === null) {
-      const processes: PM2Process[] = await this._dataManager.getProcesses();
-      logger.info(
-        `Checking processes every ${config.check_interval_minutes} minute(s)`
-      );
+  private async scheduleJob(): Promise<void> {
+    const intervalInMinutes = config.check_interval_minutes;
+    const processes: PM2Process[] = await this._dataManager.getProcesses();
+    logger.info(
+      `Scheduling job to check processes every ${intervalInMinutes} minutes`
+    );
 
-      this.intervalId = setInterval(
-        async () => {
+    const job = schedule.scheduleJob(
+      'process_checker_job',
+      `*/${intervalInMinutes} * * * *`,
+      async () => {
+        try {
           for (const pm2Process of processes) {
             await this.checkProcess(pm2Process);
           }
-        },
-        config.check_interval_minutes * 60 * 1000
-      );
-    } else {
-      logger.warn('Interval already set for process checking.');
-    }
+        } catch (error) {
+          logger.error(`Error in scheduled job: ${error}`);
+        }
+      }
+    );
   }
 
   private async checkProcess(pm2Process: PM2Process): Promise<void> {
@@ -97,6 +100,8 @@ export default class PM2Controller implements IShutdown {
         logger.error(`Error while connecting to pm2! ${e.message}`);
         ExitHandler.handleExit(1);
       }
+
+      this.scheduleJob();
     });
   }
 }
