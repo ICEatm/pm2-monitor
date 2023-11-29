@@ -12,7 +12,7 @@
     "dev": "ts-node --transpiler sucrase/ts-node-plugin ./src/index.ts",
     "build": "tsc && ts-node --transpiler sucrase/ts-node-plugin ./src/scripts/copy_html_to_build.ts",
     "start": "node ./build/src/index.js",
-    "update": "ts-node --transpiler sucrase/ts-node-plugin ./src/scripts/update_project.ts"
+    "update": "ts-node --transpiler sucrase/ts-node-plugin ./update_project.ts"
   },
   "repository": {
     "type": "git",

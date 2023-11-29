@@ -1,8 +1,15 @@
-import {repository_url} from '../../config/default.json';
+import {repository_url} from './config/default.json';
 import simpleGit, {SimpleGit} from 'simple-git';
 
 async function updateProject(repository: string): Promise<void> {
-  const git: SimpleGit = simpleGit(repository);
+  console.log(`Attempting to update repository at: ${repository}`);
+
+  const git: SimpleGit = simpleGit({
+    baseDir: process.cwd(),
+    binary: 'git',
+    maxConcurrentProcesses: 6,
+    trimmed: false,
+  });
 
   try {
     const status = await git.status();
