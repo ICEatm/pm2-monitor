@@ -1,5 +1,6 @@
 {
     "version": "1.0",
+    "repository_url": "https://github.com/ICEatm/pm2-monitor",
     "email": {
         "mail_from": "",
         "mail_from_password": "",
@@ -12,6 +13,7 @@
     "max_restarts": 3,
     "check_interval_minutes": 1,
     "processes": [
-        "TEST-PROCESS"
+        "TEST PROCESS",
+        "TEST PROCESS 2"
     ]
 }
