@@ -1,5 +1,6 @@
 import MailController from '../controller/mailController';
 import IShutdown from '../../interfaces/IShutdown';
+import ErrorHandler from '../handler/ErrorHandler';
 import DataManager from '../manager/dataManager';
 import ExitHandler from '../handler/ExitHandler';
 import config from '../../config/default.json';
@@ -12,14 +13,21 @@ export default class PM2Controller implements IShutdown {
   private _processesExceedingThreshold: PM2Process[] = [];
   private readonly _mailController: MailController;
   private _processJob: schedule.Job | null = null;
+  private readonly _errorHandler: ErrorHandler;
   private readonly _dataManager: DataManager;
 
-  constructor(dataManager: DataManager, mailController: MailController) {
+  constructor(
+    dataManager: DataManager,
+    mailController: MailController,
+    errorHandler: ErrorHandler
+  ) {
     this._mailController = mailController;
+    this._errorHandler = errorHandler;
     this._dataManager = dataManager;
 
     logger.info(`PM2 Monitor started! Version ${config.version}`);
     ExitHandler.registerProcessToClose(this);
+    this._errorHandler.registerHandlers();
     this.connect();
   }
 
