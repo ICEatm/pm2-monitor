@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^20.10.1",
+    "@types/node": "^20.10.3",
     "@types/node-schedule": "^2.1.4",
     "@types/nodemailer": "^6.4.14"
   }
