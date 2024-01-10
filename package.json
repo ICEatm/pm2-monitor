@@ -32,7 +32,7 @@
     "nodemailer": "^6.9.7",
     "pm2": "^5.2.2",
     "simple-git": "^3.21.0",
-    "sucrase": "^3.34.0",
+    "sucrase": "^3.35.0",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.3.3",
