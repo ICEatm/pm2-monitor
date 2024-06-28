@@ -1,6 +1,7 @@
 import type PM2Process from '../../types/PM2';
 import type Config from '../../types/Config';
 import logger from '../utilities/Logger';
+import {exit} from 'node:process';
 
 export default class DataManager {
   private readonly config: Config;
@@ -11,7 +12,8 @@ export default class DataManager {
 
   public async getProcesses(): Promise<PM2Process[]> {
     if (!this.isConfigValid()) {
-      throw new Error('Invalid or incomplete configuration!');
+      logger.error('Invalid or incomplete configuration!');
+      exit(1);
     }
 
     const processArray: PM2Process[] = [];
