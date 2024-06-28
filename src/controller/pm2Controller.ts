@@ -28,7 +28,6 @@ export default class PM2Controller implements IShutdown {
     logger.info(`PM2 Monitor started! Version ${config.version}`);
     ExitHandler.registerProcessToClose(this);
     this._errorHandler.registerHandlers();
-    this.connect();
   }
 
   public async gracefulShutdown(): Promise<void> {
@@ -120,7 +119,7 @@ export default class PM2Controller implements IShutdown {
     });
   }
 
-  private connect(): void {
+  public connect(): void {
     pm2.connect(async error => {
       if (error) {
         const e = error as Error;

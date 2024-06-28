@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <title>Process Status Report</title>
   <style>
@@ -35,6 +35,15 @@
     th {
       background-color: #f2f2f2;
     }
+    .description {
+      width: 80%;
+      margin: 0 auto 20px auto;
+      text-align: center;
+      font-size: 1.2em;
+      background-color: #fff;
+      padding: 15px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
   </style>
 </head>
 <body>
@@ -43,6 +52,10 @@
     <h2>Process Status Report</h2>
   </div>
   
+  <div class="description">
+    <p>This table provides a summary of the current status of various processes managed by PM2. It includes the process names, the number of times each process has been restarted, and the maximum number of restarts allowed.</p>
+  </div>
+
   <table>
     <thead>
       <tr>

@@ -8,4 +8,4 @@ new PM2Controller(
   new DataManager(Config),
   new MailController(),
   new ErrorHandler()
-);
+).connect();
