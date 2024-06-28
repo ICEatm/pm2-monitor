@@ -47,19 +47,47 @@ export default class DataManager {
       processes,
     } = this.config;
 
-    return !!(
-      version &&
-      email &&
-      email.mail_from &&
-      email.mail_from_password &&
-      email.mail_to &&
-      smtp &&
-      smtp.host &&
-      smtp.port &&
-      max_restarts &&
-      check_interval_minutes &&
-      processes &&
-      processes.length > 0
+    return (
+      this.isValidVersion(version) &&
+      this.isValidEmailConfig(email) &&
+      this.isValidSmtpConfig(smtp) &&
+      this.isPositiveInteger(max_restarts) &&
+      this.isPositiveInteger(check_interval_minutes) &&
+      this.isValidProcesses(processes)
     );
+  }
+
+  private isValidVersion(version: any): boolean {
+    return typeof version === 'string' && version.trim() !== '';
+  }
+
+  private isValidEmailConfig(email: any): boolean {
+    return (
+      email &&
+      typeof email.mail_from === 'string' &&
+      email.mail_from.trim() !== '' &&
+      typeof email.mail_from_password === 'string' &&
+      email.mail_from_password.trim() !== '' &&
+      typeof email.mail_to === 'string' &&
+      email.mail_to.trim() !== ''
+    );
+  }
+
+  private isValidSmtpConfig(smtp: any): boolean {
+    return (
+      smtp &&
+      typeof smtp.host === 'string' &&
+      smtp.host.trim() !== '' &&
+      typeof smtp.port === 'number' &&
+      smtp.port > 0
+    );
+  }
+
+  private isPositiveInteger(value: any): boolean {
+    return typeof value === 'number' && Number.isInteger(value) && value > 0;
+  }
+
+  private isValidProcesses(processes: any): boolean {
+    return Array.isArray(processes) && processes.length > 0;
   }
 }
