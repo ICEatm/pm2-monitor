@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Process Status Report</title>
   <style>
     body {
@@ -56,12 +58,13 @@
     <p>This table provides a summary of the current status of various processes managed by PM2. It includes the process names, the number of times each process has been restarted, and the maximum number of restarts allowed.</p>
   </div>
 
-  <table>
+  <table aria-labelledby="table-caption">
+    <caption id="table-caption">Current Status of PM2 Managed Processes</caption>
     <thead>
       <tr>
-        <th>Process Name</th>
-        <th>Restart Count</th>
-        <th>Max Restarts</th>
+        <th scope="col">Process Name</th>
+        <th scope="col">Restart Count</th>
+        <th scope="col">Max Restarts</th>
       </tr>
     </thead>
     <tbody>
