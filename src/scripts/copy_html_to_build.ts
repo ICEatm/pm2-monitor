@@ -21,10 +21,8 @@ const copyTemplates = async (): Promise<void> => {
     console.log('Templates copied successfully!');
   } catch (error) {
     console.error('Error copying templates:', error);
+    throw error;
   }
 };
 
-copyTemplates().catch(error => {
-  console.error('Unhandled error during template copy:', error);
-  throw error;
-});
+export {copyTemplates};
